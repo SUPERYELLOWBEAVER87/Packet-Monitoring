@@ -84,6 +84,9 @@ struct metadata {
     bit<16> flowID;
 }
 
+/*
+Structure that contains all the headers we will be utilizing.
+*/
 struct headers {
     ethernet_t ethernet;
     ipv4_t ipv4;
@@ -182,13 +185,16 @@ control MyIngress(inout headers hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
 
-                      
+
+    /*
+    Action that marks the metadata of the packet to be dropped.
+    */
     action drop() {
         mark_to_drop(standard_metadata);
     }
     
     /*
-    Forwards the packet
+    Forwards the packet. 
     */
     action ipv4_forward(macAddr_t dstAddr, egressSpec_t port) {
         standard_metadata.egress_spec = port;
@@ -208,8 +214,12 @@ control MyIngress(inout headers hdr,
                                                                 hdr.tcp.srcPort,
                                                                 hdr.tcp.dstPort},
                                                                     (bit<32>)0);
-    }   
+    }
 
+    /*
+    Initialize the register to store our statistics.
+    */
+    register<monitor>(4096) statistics;
 
     table ipv4_lpm {
         key = {
@@ -223,16 +233,14 @@ control MyIngress(inout headers hdr,
         size = 1024;
         default_action = drop();
     }
-
-    /*
-    Initialize the register to store our statistics.
-    */
-    register<monitor>(4096) statistics;
-    
-    
+     
     apply {
+        /*If the ipv4 header is valid, apply the table.*/
         if (hdr.ipv4.isValid()) {
             ipv4_lpm.apply();
+
+            /*Compute the hash and get the flow and index for the register.*/
+            compute_hash();
         }
     }
 }
