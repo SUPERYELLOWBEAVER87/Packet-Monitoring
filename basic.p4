@@ -11,7 +11,13 @@ P4 Lang Tutorial: https://github.com/p4lang/tutorials/tree/master/exercises
 #include <core.p4>
 #include <v1model.p4>
 
+/*
+Defines constants we will use. 
+0x800 defines a IPv4 packet in ethernet header.
+6 defines a IPv4 packet utilizing TCP protocol.
+*/
 const bit<16> TYPE_IPV4 = 0x800;
+const bit<8> TYPE_TCP = 6;
 
 /*************************************************************************
 *********************** H E A D E R S  ***********************************
@@ -71,16 +77,32 @@ header tcp_t {
 }
 
 /*
-Defines metadata structrure to store information, will be empty.
+This metadata will contain the has for the flow ID computed by our five variables.
 */
 struct metadata {
-    /* empty */
+
+    bit<16> flowID;
 }
 
 struct headers {
     ethernet_t ethernet;
     ipv4_t ipv4;
     tcp_t tcp;
+}
+
+/*
+Defines the statistics we are getting. We will use this in tandem with a register to define the class.
+*/
+
+struct monitor {
+    ip4Addr_t srcAddr;
+    ip4Addr_t dstAddr;
+    bit<48> startTime;
+    bit<48> endTime;
+    bit<16> totalLen;
+    bit<16> srcPort;
+    bit<16> dstPort;
+    bit<1> exist;
 }
 
 /*************************************************************************
@@ -123,6 +145,16 @@ parser MyParser(packet_in packet,
     */
     state parse_ipv4 {
         packet.extract(hdr.ipv4);
+        transition select(hdr.ipv4.protocol){
+            TYPE_TCP: tcp;
+        }
+    }
+
+    /*
+    Extracts TCP headers from packet, unconditionally transitions to accept it.
+    */
+    state parse_tcp {
+        packet.extract(hdr.tcp);
         transition accept;
     }
 
@@ -149,17 +181,36 @@ Timestamps for ingress: https://p4.org/p4-spec/docs/PSA-v1.1.0.html#sec-timestam
 control MyIngress(inout headers hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
+
+                      
     action drop() {
         mark_to_drop(standard_metadata);
     }
     
+    /*
+    Forwards the packet
+    */
     action ipv4_forward(macAddr_t dstAddr, egressSpec_t port) {
         standard_metadata.egress_spec = port;
         hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
         hdr.ethernet.dstAddr = dstAddr;
         hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
     }
-    
+
+    /*
+    Computes the flowid which will be used as an index in the register.
+    Matching hashes will have the same fields, which identifies them as being a part of the flow.
+    */
+    action compute_hash(){
+        hash(metadata.flowID, HashAlgorithm.crc16, (bit<32>)0, {hdr.ipv4.srcAddr,
+                                                                hdr.ipv4.dstAddr,
+                                                                hdr.ipv4.protocol,
+                                                                hdr.tcp.srcPort,
+                                                                hdr.tcp.dstPort},
+                                                                    (bit<32>)0);
+    }   
+
+
     table ipv4_lpm {
         key = {
             hdr.ipv4.dstAddr: lpm;
@@ -172,6 +223,12 @@ control MyIngress(inout headers hdr,
         size = 1024;
         default_action = drop();
     }
+
+    /*
+    Initialize the register to store our statistics.
+    */
+    register<monitor>(4096) statistics;
+    
     
     apply {
         if (hdr.ipv4.isValid()) {
