@@ -208,7 +208,7 @@ control MyIngress(inout headers hdr,
     Matching hashes will have the same fields, which identifies them as being a part of the flow.
     */
     action compute_hash(){
-        hash(metadata.flowID, HashAlgorithm.crc16, (bit<32>)0, {hdr.ipv4.srcAddr,
+        hash(meta.flowID, HashAlgorithm.crc16, (bit<32>)0, {hdr.ipv4.srcAddr,
                                                                 hdr.ipv4.dstAddr,
                                                                 hdr.ipv4.protocol,
                                                                 hdr.tcp.srcPort,
