@@ -93,21 +93,6 @@ struct headers {
     tcp_t tcp;
 }
 
-/*
-Defines the statistics we are getting. We will use this in tandem with a register to define the class.
-*/
-
-struct monitor {
-    ip4Addr_t srcAddr;
-    ip4Addr_t dstAddr;
-    bit<48> startTime;
-    bit<48> endTime;
-    bit<16> totalLen;
-    bit<16> srcPort;
-    bit<16> dstPort;
-    bit<1> exist;
-}
-
 /*************************************************************************
 *********************** P A R S E R  ***********************************
 *************************************************************************/
@@ -214,6 +199,8 @@ control MyIngress(inout headers hdr,
                                                                 hdr.tcp.srcPort,
                                                                 hdr.tcp.dstPort},
                                                                     (bit<32>)0);
+								    
+	r_index.write(r_counter, meta.flowID);
     }
 
     /*
@@ -230,6 +217,11 @@ control MyIngress(inout headers hdr,
     register<bit<1>>(64) r_exist;
     
     register<bit<16>>(64) r_index;
+    
+    /*
+    Initialize a variable to keep incrementing as the number of packets pass through.
+    */
+    bit<32> r_counter = 0;
     
 
     table ipv4_lpm {
