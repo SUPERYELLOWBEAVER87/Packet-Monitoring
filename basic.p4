@@ -217,9 +217,20 @@ control MyIngress(inout headers hdr,
     }
 
     /*
-    Initialize the register to store our statistics.
+    Initialize the register to store all our statistics.
+    register<bit size>(Length of array) <name of register>
     */
-    register<monitor>(4096) statistics;
+    register<ip4Addr_t>(64) r_srcAddr;
+    register<ip4Addr_t>(64) r_dstAddr;
+    register<bit<32>>(64) r_startTime;
+    register<bit<48>>(64) r_endTime;
+    register<bit<16>>(64) r_totalLen;
+    register<bit<16>>(64) r_srcPort;
+    register<bit<16>>(64) r_dstPort;
+    register<bit<1>>(64) r_exist;
+    
+    register<bit<16>>(64) r_index;
+    
 
     table ipv4_lpm {
         key = {
