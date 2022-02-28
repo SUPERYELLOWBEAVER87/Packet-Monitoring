@@ -199,8 +199,6 @@ control MyIngress(inout headers hdr,
                                                                 hdr.tcp.srcPort,
                                                                 hdr.tcp.dstPort},
                                                                     (bit<32>)0);
-								    
-	r_index.write(r_counter, meta.flowID);
     }
 
     /*
@@ -214,7 +212,8 @@ control MyIngress(inout headers hdr,
     register<bit<16>>(64) r_totalLen;
     register<bit<16>>(64) r_srcPort;
     register<bit<16>>(64) r_dstPort;
-    register<bit<1>>(64) r_exist;
+    
+    register<int>(64) r_exist;
     
     register<bit<16>>(64) r_index;
     
@@ -238,12 +237,34 @@ control MyIngress(inout headers hdr,
     }
      
     apply {
-        /*If the ipv4 header is valid, apply the table.*/
-        if (hdr.ipv4.isValid()) {
+        //If the ipv4 header is valid, apply the table.
+        if (hdr.ipv4.isValid) {
             ipv4_lpm.apply();
 
-            /*Compute the hash and get the flow and index for the register.*/
+
+            //Compute the hash and get the flow and index for the register.
             compute_hash();
+            //Write the result of the hash, the flowID, to an index register to keep track of the indexes.
+            r_index.write(r_counter, meta.flowID);
+            //Increment the counter the packet number by 1
+            r_counter = r_counter + 1;
+            //Check if this flow already exist or if it is a new flow
+            //If the flowID is not 1 then it does not exist yet, append to the register all the information.
+            if(r_exist.read(meta.flowID) != 1){
+                r_srcAddr.write(meta.flowID, hdr.ipv4.srcAddr);
+                r_dstAddr.write(meta.flowID, hdr.ipv4.dstAddr);
+                r_startTime.write(meta.flowID, standard_metadata.ingress_timestamp);
+                r_endTime.write(meta.flowID, standard_metadata.ingress_timestamp);
+                r_totalSize.write(meta.flowID, hdr.ipv4.totalLen);
+                r_srcPort.write(meta.flowID, hdr.tcp.srcPort);
+                r_dstPort.write(meta.flowID, hdr.tcp.dstPort);
+                r_exist.write(meta.flowID, 1);
+            }
+            //If the value of r_exist at flowID index has already been set, then this flow already exists. Just add increment end_time and total size, all the other variables remain the same.
+            else{
+                r_endTime.write(meta.flowID, standard_metadata.ingress_timestamp);
+                bit<16> temp = r_totalSize.read(meta.flowID);
+                r_totalSize.write(meta.flowID, temp + hdr.ipv4.totalLen);
         }
     }
 }
