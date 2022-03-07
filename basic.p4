@@ -218,9 +218,10 @@ control MyIngress(inout headers hdr,
     register<bit<16>>(64) r_index;
     
     /*
-    Initialize a variable to keep incrementing as the number of packets pass through.
+    Initialize an indirect counter to keep track of packets in a flow
     */
-    bit<32> r_counter = 0;
+    counter(64, CounterType.packets) packets_in_flow;
+   
     
 
     table ipv4_lpm {
