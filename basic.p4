@@ -240,7 +240,12 @@ control MyIngress(inout headers hdr,
             
             //Use index 0 of r_index as a counter for the packets. We add 1 to this value through every iteration.
             //Write the flowID of every packet that passes through.
-            r_index.write(r_index.read(0), meta.flowID)
+	    
+	    //We HAVE to add 1 to the index at the start. Otherwise r_index at index 0 would store meta.flowID.
+	    //r_index[0] is reserved for the counter. So we must add 1 to the value.
+	    bit<16> packetIndex = r_index.read(0) + 1;
+	    
+            r_index.write(r_index.read(packetIndex), meta.flowID)
 
             //If we check the exist register, and we see that it has the default value at the flowID index, then  this is a new flow.
             if(r_exist.read(meta.flowID) == 0){
