@@ -209,7 +209,8 @@ control MyIngress(inout headers hdr,
     register<ip4Addr_t>(64) r_dstAddr;
     register<bit<32>>(64) r_startTime;
     register<bit<48>>(64) r_endTime;
-    register<bit<16>>(64) r_totalLen;
+    //Bit size of total len will not be 16 like in ipv4, it will be 64 cause it is the total length of all combined packets in the flow
+    register<bit<64>>(64) r_totalSize;
     register<bit<16>>(64) r_srcPort;
     register<bit<16>>(64) r_dstPort;
     
@@ -217,11 +218,7 @@ control MyIngress(inout headers hdr,
     
     register<bit<16>>(64) r_index;
     
-    /*
-    Initialize a variable to keep incrementing as the number of packets pass through.
-    */
-    bit<32> r_counter = 0;
-    
+
 
     table ipv4_lpm {
         key = {
@@ -240,33 +237,44 @@ control MyIngress(inout headers hdr,
         //If the ipv4 header is valid, apply the table.
         if (hdr.ipv4.isValid) {
             ipv4_lpm.apply();
-
-
+	    
             //Compute the hash and get the flow and index for the register.
             compute_hash();
-            //Write the result of the hash, the flowID, to an index register to keep track of the indexes.
-            r_index.write(r_counter, meta.flowID);
-            //Increment the counter the packet number by 1
-            r_counter = r_counter + 1;
-            //Check if this flow already exist or if it is a new flow
-            //If the flowID is not 1 then it does not exist yet, append to the register all the information.
-            if(r_exist.read(meta.flowID) != 1){
+	    
+            //Use index 0 of r_index as a counter for the packets. We add 1 to this value through every iteration.
+            //Write the flowID of every packet that passes through.
+	    
+	    //We have to add 1 to the index because otherwise it would try to write the meta.flowID to index 0, which is the counter
+	    //So we have to start the counter at 1, or add 1.
+            r_index.write(r_index.read(0) + 1, meta.flowID)
+	    
+	     //If we check the exist register, and we see that it has the default value at the flowID index, then  this is a new flow.
+            if(r_exist.read(meta.flowID) == 0){
+                //Add the entires to the register at the flowID index
                 r_srcAddr.write(meta.flowID, hdr.ipv4.srcAddr);
                 r_dstAddr.write(meta.flowID, hdr.ipv4.dstAddr);
                 r_startTime.write(meta.flowID, standard_metadata.ingress_timestamp);
+                //We set the end time of the flow to the same as the start time, we will change this value when we get a packet with the same flow.
                 r_endTime.write(meta.flowID, standard_metadata.ingress_timestamp);
                 r_totalSize.write(meta.flowID, hdr.ipv4.totalLen);
                 r_srcPort.write(meta.flowID, hdr.tcp.srcPort);
                 r_dstPort.write(meta.flowID, hdr.tcp.dstPort);
-                r_exist.write(meta.flowID, 1);
+                //Change the register default value from 0 to 1, so we can check this later and indicate that the flow exists.
+                r_exist.write(meta.flowID, 1)
             }
-            //If the value of r_exist at flowID index has already been set, then this flow already exists. Just add increment end_time and total size, all the other variables remain the same.
+            //Otherwise if we read the register at the flowID, and it is NOT set to the default value of 0, then the value has been modified and the flow already exist.
+            //Append information to the register
             else{
-                r_endTime.write(meta.flowID, standard_metadata.ingress_timestamp);
-                bit<16> temp = r_totalSize.read(meta.flowID);
+                //The new endtime is the new start time
+                r_endTime.write(meta.flowID, standard_metadata.ingress_timestamp)
+                //Add total length value to itself
+                bit<16> temp = r_totalSize.read(meta.flowID)
                 r_totalSize.write(meta.flowID, temp + hdr.ipv4.totalLen);
-        }
+            } 
     }
+    //Increment index 0 of r_index since it is the counter variable.
+    //Write the new value at the 0 index, and add 1 to itself.
+    r_index.write(0, r_index.read(0) + 1)
 }
 
 /*************************************************************************
