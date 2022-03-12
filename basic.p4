@@ -1,10 +1,8 @@
 /*
 Useful references and links while working:
-
 Official Documentation: https://p4.org/p4-spec/docs/P4-16-v1.0.0-spec.html
 P4 Github Guide: https://github.com/jafingerhut/p4-guide
 P4 Lang Tutorial: https://github.com/p4lang/tutorials/tree/master/exercises
-
 */
 
 
@@ -205,6 +203,7 @@ control MyIngress(inout headers hdr,
     Initialize the register to store all our statistics.
     register<bit size>(Length of array) <name of register>
     */
+
     register<ip4Addr_t>(64) r_srcAddr;
     register<ip4Addr_t>(64) r_dstAddr;
     register<bit<32>>(64) r_startTime;
@@ -213,11 +212,10 @@ control MyIngress(inout headers hdr,
     register<bit<64>>(64) r_totalSize;
     register<bit<16>>(64) r_srcPort;
     register<bit<16>>(64) r_dstPort;
-    
+
     register<int>(64) r_exist;
     
     register<bit<16>>(64) r_index;
-    
 
 
     table ipv4_lpm {
@@ -237,18 +235,14 @@ control MyIngress(inout headers hdr,
         //If the ipv4 header is valid, apply the table.
         if (hdr.ipv4.isValid) {
             ipv4_lpm.apply();
-	    
             //Compute the hash and get the flow and index for the register.
             compute_hash();
-	    
+            
             //Use index 0 of r_index as a counter for the packets. We add 1 to this value through every iteration.
             //Write the flowID of every packet that passes through.
-	    
-	    //We have to add 1 to the index because otherwise it would try to write the meta.flowID to index 0, which is the counter
-	    //So we have to start the counter at 1, or add 1.
-            r_index.write(r_index.read(0) + 1, meta.flowID)
-	    
-	     //If we check the exist register, and we see that it has the default value at the flowID index, then  this is a new flow.
+            r_index.write(r_index.read(0), meta.flowID)
+
+            //If we check the exist register, and we see that it has the default value at the flowID index, then  this is a new flow.
             if(r_exist.read(meta.flowID) == 0){
                 //Add the entires to the register at the flowID index
                 r_srcAddr.write(meta.flowID, hdr.ipv4.srcAddr);
@@ -270,11 +264,11 @@ control MyIngress(inout headers hdr,
                 //Add total length value to itself
                 bit<16> temp = r_totalSize.read(meta.flowID)
                 r_totalSize.write(meta.flowID, temp + hdr.ipv4.totalLen);
-            } 
+            }
+        //Increment index 0 of r_index since it is the counter variable.
+        //Write the new value at the 0 index, and add 1 to itself.
+        r_index.write(0, r_index.read(0) + 1)
     }
-    //Increment index 0 of r_index since it is the counter variable.
-    //Write the new value at the 0 index, and add 1 to itself.
-    r_index.write(0, r_index.read(0) + 1)
 }
 
 /*************************************************************************
@@ -334,4 +328,3 @@ MyEgress(),
 MyComputeChecksum(),
 MyDeparser()
 ) main;
-
