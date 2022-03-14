@@ -1,10 +1,9 @@
-/*  
+/*
 Useful references and links while working:
 Official Documentation: https://p4.org/p4-spec/docs/P4-16-v1.0.0-spec.html
 P4 Github Guide: https://github.com/jafingerhut/p4-guide
 P4 Lang Tutorial: https://github.com/p4lang/tutorials/tree/master/exercises
 */
-
 
 
 #include <core.p4>
@@ -80,7 +79,7 @@ This metadata will contain the has for the flow ID computed by our five variable
 */
 struct metadata {
 
-    bit<16> flowID;
+    bit<32> flowID;
 }
 
 /*
@@ -192,7 +191,7 @@ control MyIngress(inout headers hdr,
     Matching hashes will have the same fields, which identifies them as being a part of the flow.
     */
     action compute_hash(){
-        hash(meta.flowID, HashAlgorithm.crc16, (bit<32>)0, {hdr.ipv4.srcAddr,
+        hash(meta.flowID, HashAlgorithm.crc32, (bit<32>)0, {hdr.ipv4.srcAddr,
                                                                 hdr.ipv4.dstAddr,
                                                                 hdr.ipv4.protocol,
                                                                 hdr.tcp.srcPort,
@@ -207,16 +206,16 @@ control MyIngress(inout headers hdr,
 
     register<ip4Addr_t>(64) r_srcAddr;
     register<ip4Addr_t>(64) r_dstAddr;
-    register<bit<32>>(64) r_startTime;
+    register<bit<48>>(64) r_startTime;
     register<bit<48>>(64) r_endTime;
-    //Bit size of total len will not be 16 like in ipv4, it will be 64 cause it is the total length of all combined packets in the flow
-    register<bit<64>>(64) r_totalSize;
+    register<bit<16>>(64) r_totalSize;
     register<bit<16>>(64) r_srcPort;
     register<bit<16>>(64) r_dstPort;
+    register<bit<1>>(64) r_exist;
 
-    register<int>(64) r_exist;
+    register<bit<32>>(64) r_index;
+    register<bit<32>>(1) r_counter;
     
-    register<bit<16>>(64) r_index;
 
 
     table ipv4_lpm {
@@ -234,46 +233,45 @@ control MyIngress(inout headers hdr,
      
     apply {
         //If the ipv4 header is valid, apply the table.
-        if (hdr.ipv4.isValid) {
+        if (hdr.ipv4.isValid()) {
             ipv4_lpm.apply();
-            //Compute the hash and get the flow and index for the register.
+            //Compute the hash, store it in the metadata.
             compute_hash();
-            
-            //Use index 0 of r_index as a counter for the packets. We add 1 to this value through every iteration.
-            //Write the flowID of every packet that passes through.
-	    
-	    //We HAVE to add 1 to the index at the start. Otherwise r_index at index 0 would store meta.flowID.
-	    //r_index[0] is reserved for the counter. So we must add 1 to the value.
-	    bit<16> packetIndex = r_index.read(0) + 1;
-	    
-            r_index.write(r_index.read(packetIndex), meta.flowID);
+            //Initialize variable to store current counter variable
+            bit<32> counter_value;
+            //Counter_value is equal to the value at the 0 index.
+            r_counter.read(counter_value, 0);
+            //Record the flow ID of the current packet with the counter.
+            r_index.write(counter_value + 1, meta.flowID);
 
-            //If we check the exist register, and we see that it has the default value at the flowID index, then  this is a new flow.
-            if(r_exist.read(meta.flowID) == 0){
-                //Add the entires to the register at the flowID index
+            //Initialize variable to store value
+            bit<1> exist_value;
+            //Exist_value is equal to the value at flowID
+            r_exist.read(exist_value, meta.flowID);
+
+            //If the value is still equal to 0 at the flow ID, then the flow has not been registered.
+            if (exist_value == 0){
                 r_srcAddr.write(meta.flowID, hdr.ipv4.srcAddr);
                 r_dstAddr.write(meta.flowID, hdr.ipv4.dstAddr);
-                r_startTime.write(meta.flowID, standard_metadata.ingress_timestamp);
-                //We set the end time of the flow to the same as the start time, we will change this value when we get a packet with the same flow.
-                r_endTime.write(meta.flowID, standard_metadata.ingress_timestamp);
+                r_startTime.write(meta.flowID, standard_metadata.ingress_global_timestamp);
+                r_endTime.write(meta.flowID, standard_metadata.ingress_global_timestamp);
                 r_totalSize.write(meta.flowID, hdr.ipv4.totalLen);
                 r_srcPort.write(meta.flowID, hdr.tcp.srcPort);
                 r_dstPort.write(meta.flowID, hdr.tcp.dstPort);
-                //Change the register default value from 0 to 1, so we can check this later and indicate that the flow exists.
                 r_exist.write(meta.flowID, 1);
             }
-            //Otherwise if we read the register at the flowID, and it is NOT set to the default value of 0, then the value has been modified and the flow already exist.
-            //Append information to the register
+            //Otherwise if the value is not default, it has been set. This is a registered flow.
             else{
-                //The new endtime is the new start time
-                r_endTime.write(meta.flowID, standard_metadata.ingress_timestamp);
-                //Add total length value to itself
-                bit<16> temp = r_totalSize.read(meta.flowID);
-                r_totalSize.write(meta.flowID, temp + hdr.ipv4.totalLen);
+                //End time is the new start time
+                r_endTime.write(meta.flowID, standard_metadata.ingress_global_timestamp);
+                //Increment total length register value
+                bit<16> old_size;
+                r_totalSize.read(old_size, meta.flowID);
+                r_totalSize.write(meta.flowID, old_size + hdr.ipv4.totalLen);
             }
-        //Increment index 0 of r_index since it is the counter variable.
-        //Write the new value at the 0 index, and add 1 to itself.
-        r_index.write(0, r_index.read(0) + 1);
+            //Increment the counter variable by adding 1 to it
+            r_counter.write(0, counter_value + 1);
+        }
     }
 }
 
