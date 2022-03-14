@@ -204,16 +204,16 @@ control MyIngress(inout headers hdr,
     register<bit size>(Length of array) <name of register>
     */
 
-    register<ip4Addr_t>(64) r_srcAddr;
-    register<ip4Addr_t>(64) r_dstAddr;
-    register<bit<48>>(64) r_startTime;
-    register<bit<48>>(64) r_endTime;
-    register<bit<16>>(64) r_totalSize;
-    register<bit<16>>(64) r_srcPort;
-    register<bit<16>>(64) r_dstPort;
-    register<bit<1>>(64) r_exist;
+    register<ip4Addr_t>(2147483647) r_srcAddr;
+    register<ip4Addr_t>(2147483647) r_dstAddr;
+    register<bit<48>>(2147483647) r_startTime;
+    register<bit<48>>(2147483647) r_endTime;
+    register<bit<16>>(2147483647) r_totalSize;
+    register<bit<16>>(2147483647) r_srcPort;
+    register<bit<16>>(2147483647) r_dstPort;
+    register<bit<1>>(2147483647) r_exist;
 
-    register<bit<32>>(64) r_index;
+    register<bit<32>>(2147483647) r_index;
     register<bit<32>>(1) r_counter;
     
 
@@ -242,7 +242,7 @@ control MyIngress(inout headers hdr,
             //Counter_value is equal to the value at the 0 index.
             r_counter.read(counter_value, 0);
             //Record the flow ID of the current packet with the counter.
-            r_index.write(counter_value + 1, meta.flowID);
+            r_index.write(counter_value, meta.flowID);
 
             //Initialize variable to store value
             bit<1> exist_value;
@@ -259,6 +259,8 @@ control MyIngress(inout headers hdr,
                 r_srcPort.write(meta.flowID, hdr.tcp.srcPort);
                 r_dstPort.write(meta.flowID, hdr.tcp.dstPort);
                 r_exist.write(meta.flowID, 1);
+                //Increment the counter variable by adding 1 to it
+                r_counter.write(0, counter_value + 1);
             }
             //Otherwise if the value is not default, it has been set. This is a registered flow.
             else{
@@ -269,8 +271,6 @@ control MyIngress(inout headers hdr,
                 r_totalSize.read(old_size, meta.flowID);
                 r_totalSize.write(meta.flowID, old_size + hdr.ipv4.totalLen);
             }
-            //Increment the counter variable by adding 1 to it
-            r_counter.write(0, counter_value + 1);
         }
     }
 }
