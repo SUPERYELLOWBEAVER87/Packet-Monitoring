@@ -245,7 +245,7 @@ control MyIngress(inout headers hdr,
 	    //r_index[0] is reserved for the counter. So we must add 1 to the value.
 	    bit<16> packetIndex = r_index.read(0) + 1;
 	    
-            r_index.write(r_index.read(packetIndex), meta.flowID)
+            r_index.write(r_index.read(packetIndex), meta.flowID);
 
             //If we check the exist register, and we see that it has the default value at the flowID index, then  this is a new flow.
             if(r_exist.read(meta.flowID) == 0){
@@ -259,20 +259,20 @@ control MyIngress(inout headers hdr,
                 r_srcPort.write(meta.flowID, hdr.tcp.srcPort);
                 r_dstPort.write(meta.flowID, hdr.tcp.dstPort);
                 //Change the register default value from 0 to 1, so we can check this later and indicate that the flow exists.
-                r_exist.write(meta.flowID, 1)
+                r_exist.write(meta.flowID, 1);
             }
             //Otherwise if we read the register at the flowID, and it is NOT set to the default value of 0, then the value has been modified and the flow already exist.
             //Append information to the register
             else{
                 //The new endtime is the new start time
-                r_endTime.write(meta.flowID, standard_metadata.ingress_timestamp)
+                r_endTime.write(meta.flowID, standard_metadata.ingress_timestamp);
                 //Add total length value to itself
-                bit<16> temp = r_totalSize.read(meta.flowID)
+                bit<16> temp = r_totalSize.read(meta.flowID);
                 r_totalSize.write(meta.flowID, temp + hdr.ipv4.totalLen);
             }
         //Increment index 0 of r_index since it is the counter variable.
         //Write the new value at the 0 index, and add 1 to itself.
-        r_index.write(0, r_index.read(0) + 1)
+        r_index.write(0, r_index.read(0) + 1);
     }
 }
 
