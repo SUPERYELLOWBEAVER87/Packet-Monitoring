@@ -191,12 +191,12 @@ control MyIngress(inout headers hdr,
     Matching hashes will have the same fields, which identifies them as being a part of the flow.
     */
     action compute_hash(){
-        hash(meta.flowID, HashAlgorithm.crc32, (bit<32>)0, {hdr.ipv4.srcAddr,
+        hash(meta.flowID, HashAlgorithm.crc16, (bit<16>)0, {hdr.ipv4.srcAddr,
                                                                 hdr.ipv4.dstAddr,
                                                                 hdr.ipv4.protocol,
                                                                 hdr.tcp.srcPort,
                                                                 hdr.tcp.dstPort},
-                                                                    (bit<32>)0);
+                                                                    (bit<16>)0);
     }
 
     /*
@@ -204,16 +204,16 @@ control MyIngress(inout headers hdr,
     register<bit size>(Length of array) <name of register>
     */
 
-    register<ip4Addr_t>(2147483647) r_srcAddr;
-    register<ip4Addr_t>(2147483647) r_dstAddr;
-    register<bit<48>>(2147483647) r_startTime;
-    register<bit<48>>(2147483647) r_endTime;
-    register<bit<16>>(2147483647) r_totalSize;
-    register<bit<16>>(2147483647) r_srcPort;
-    register<bit<16>>(2147483647) r_dstPort;
-    register<bit<1>>(2147483647) r_exist;
+    register<ip4Addr_t>(65536) r_srcAddr;
+    register<ip4Addr_t>(65536) r_dstAddr;
+    register<bit<48>>(65536) r_startTime;
+    register<bit<48>>(65536) r_endTime;
+    register<bit<64>>(65536) r_totalSize;
+    register<bit<16>>(65536) r_srcPort;
+    register<bit<16>>(65536) r_dstPort;
+    register<bit<1>>(65536) r_exist;
 
-    register<bit<32>>(2147483647) r_index;
+    register<bit<32>>(65536) r_index;
     register<bit<32>>(1) r_counter;
     
 
@@ -255,7 +255,8 @@ control MyIngress(inout headers hdr,
                 r_dstAddr.write(meta.flowID, hdr.ipv4.dstAddr);
                 r_startTime.write(meta.flowID, standard_metadata.ingress_global_timestamp);
                 r_endTime.write(meta.flowID, standard_metadata.ingress_global_timestamp);
-                r_totalSize.write(meta.flowID, hdr.ipv4.totalLen);
+                bit<64> temporary = (bit<64>) hdr.ipv4.totalLen;
+                r_totalSize.write(meta.flowID, temporary);
                 r_srcPort.write(meta.flowID, hdr.tcp.srcPort);
                 r_dstPort.write(meta.flowID, hdr.tcp.dstPort);
                 r_exist.write(meta.flowID, 1);
@@ -267,9 +268,9 @@ control MyIngress(inout headers hdr,
                 //End time is the new start time
                 r_endTime.write(meta.flowID, standard_metadata.ingress_global_timestamp);
                 //Increment total length register value
-                bit<16> old_size;
+                bit<64> old_size;
                 r_totalSize.read(old_size, meta.flowID);
-                r_totalSize.write(meta.flowID, old_size + hdr.ipv4.totalLen);
+                r_totalSize.write(meta.flowID, old_size + (bit<64>) hdr.ipv4.totalLen);
             }
         }
     }
