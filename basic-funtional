@@ -187,7 +187,7 @@ control MyIngress(inout headers hdr,
                                                                 hdr.ipv4.protocol,
                                                                 hdr.tcp.srcPort,
                                                                 hdr.tcp.dstPort},
-                                                                    (bit<16>)0);
+                                                                    (bit<32>)65536);
     }
 
     /*
