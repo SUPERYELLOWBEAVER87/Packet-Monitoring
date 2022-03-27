@@ -1,0 +1,12 @@
+find / -name "runtime_CLI.py"
+
+vim into that 
+
+def do_register_read add after exception
+
+f = open("register_value", "a")
+f.write(register.name[10:] + " "+str(index)+" "+str(value)+"\n")
+f.close() 
+
+cd /behavior-model
+file is in there.
