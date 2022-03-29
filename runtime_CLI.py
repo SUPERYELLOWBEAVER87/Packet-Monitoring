@@ -2114,6 +2114,10 @@ class RuntimeAPI(cmd.Cmd):
                 raise UIn_Error("Bad format for index")
             value = self.client.bm_register_read(0, register.name, index)
             print("{}[{}]=".format(register_name, index), value)
+            file = open("register_value", "a")
+            file.write(register.name[10:]+","+str(index)+","+str(value)+"\n")
+            file.close()
+            
         else:
             sys.stderr.write("register index omitted, reading entire array\n")
             entries = self.client.bm_register_read_all(0, register.name)
