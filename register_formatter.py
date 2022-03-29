@@ -2,7 +2,7 @@ import ipaddress
 import sys
 
 if(len(sys.argv) <= 1):
-    filename = input("Enter in the name of the register output.\n")
+    filename = input("Enter in the name of the register output text file.\n")
 else:
     filename = sys.argv[1]
 
