@@ -15,44 +15,20 @@ The goal of this is to use the capability of P4 devices to monitor and track flo
  
 PROJECT COMPLETE, STEPS TO REPLICATE PACKET MONITOR
 
-Use Lab02 on Pod 5707
+Use Lab02 on a pod that has internet to download github files.
 
-1. Launch Mininet
-2. Open Lab 2 topology
-3. Start the simulation with Run, in the bottom left corner
-4. Confirm that Topology is running properly, Shell no.1 terminal
-with containernet> prompt
+Launch Mininet Lab 2 topology. Run it and ensure you have no errors. Use sudo mn -c in a terminal to clean the topology if needed.
 
-5. Launch vscode from Start Menu
-6. Open browser navigate to our repository
-7. Open basic-functional, click "RAW" and then copy and paste the code
-to replace basic.p4 in vscode.
-8. Press CTRL + S to save the new changes.
+Navigate to this github repo on the VM. Copy the link to the RAW version of the setup.sh script.
 
-9. Compile the P4 code, type p4c basic.p4 in vscode terminal to get
-the basic.json configuration file.
+Launch a terminal in Mininet topology on s1.
 
-10. Push the basic.json file to the switch, type push_to_switch basic.json s1
-11. Navigate to the switch and confirm the file is there using ls.
+Install wget using: apt-get install wget
+When it asks you for confirmation type Y and click Enter.
 
-12. Configure the interfaces.
-13. Type: simple_switch -i 0@s1-eth0 -i 1@s1-eth1 --nanolog ipc:///tmp/bm-log.ipc basic.json&
-14. Press ENTER two times.
+Download the setup.sh script and run it using: wget https://raw.githubusercontent.com/SUPERYELLOWBEAVER87/P4-Packet-Monitoring/main/runtime_CLI.py
 
-15. Add entries to the match action table
-16. Type: simple_switch_CLI < ~/lab2/rules.cmd
+If you use the command 'ls' you should now see the script in your directory.
+Run it with bash: bash setup.sh
 
-17. Display the switchlogs with ./nanomsg_client.py on s1
-
-Ready for testing!
-
-Send messages with: ./send.py 10.0.0.2 HelloWorld
-Receive messages on host with ./recv.py
-
-Read registers with syntax:
-register_read <register_name> <index>
-
-In order to use this syntax you must be in RuntimeCmd enviroment!
-Type simple_switch_CLI to enter.
-
-If you messed up with mininet topology and need a restart: sudo mn -c
+Your enviroment is now setup to use the packet monitoring P4 script.
