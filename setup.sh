@@ -21,7 +21,7 @@ echo -e "\nDownloading additional files...\n"
 
 wget https://raw.githubusercontent.com/SUPERYELLOWBEAVER87/P4-Packet-Monitoring/main/readregister.sh
 wget https://raw.githubusercontent.com/SUPERYELLOWBEAVER87/P4-Packet-Monitoring/main/register_formatter.py 
-wget https://raw.githubusercontent.com/SUPERYELLOWBEAVER87/P4-Packet-Monitoring/main/register_read.cmd 
+wget https://raw.githubusercontent.com/SUPERYELLOWBEAVER87/P4-Packet-Monitoring/main/index.cmd
 
 echo -e "\nReplacing current runtime_CLI.py with modified runtime...\n"
 sleep 2
