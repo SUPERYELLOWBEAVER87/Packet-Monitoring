@@ -33,4 +33,4 @@ echo "Cleaning up..."
 rm -f runtime_CLI.py 
 
 echo -e "\nComplete!\n"
-echo "Packet monitoring enviroment is ready..."
+echo -e "Packet monitoring enviroment is ready!\n"
