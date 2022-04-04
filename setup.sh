@@ -9,7 +9,6 @@ sleep 5
 
 echo -e "\nConfigurating interfaces...\n"
 simple_switch -i 0@s1-eth0 -i 1@s1-eth1 --nanolog ipc:///tmp/bm-log.ipc basic.json &
-echo -e "\nComplete!\n"
 
 sleep 5
 
