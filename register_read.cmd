@@ -6,4 +6,3 @@ register_read r_totalSize 0
 register_read r_srcPort 0
 register_read r_dstPort 0
 register_read r_duration 0
-
