@@ -1,0 +1,1434 @@
+{
+  "header_types" : [
+    {
+      "name" : "scalars_0",
+      "id" : 0,
+      "fields" : [
+        ["tmp", 64, false],
+        ["tmp_0", 32, false],
+        ["tmp_1", 48, false],
+        ["tmp_2", 64, false],
+        ["counter_value_0", 32, false],
+        ["exist_value_0", 1, false],
+        ["old_size_0", 64, false],
+        ["initial_startTime_0", 48, false],
+        ["userMetadata.flowID", 32, false],
+        ["_padding_0", 7, false]
+      ]
+    },
+    {
+      "name" : "standard_metadata",
+      "id" : 1,
+      "fields" : [
+        ["ingress_port", 9, false],
+        ["egress_spec", 9, false],
+        ["egress_port", 9, false],
+        ["instance_type", 32, false],
+        ["packet_length", 32, false],
+        ["enq_timestamp", 32, false],
+        ["enq_qdepth", 19, false],
+        ["deq_timedelta", 32, false],
+        ["deq_qdepth", 19, false],
+        ["ingress_global_timestamp", 48, false],
+        ["egress_global_timestamp", 48, false],
+        ["mcast_grp", 16, false],
+        ["egress_rid", 16, false],
+        ["checksum_error", 1, false],
+        ["parser_error", 32, false],
+        ["priority", 3, false],
+        ["_padding", 3, false]
+      ]
+    },
+    {
+      "name" : "ethernet_t",
+      "id" : 2,
+      "fields" : [
+        ["dstAddr", 48, false],
+        ["srcAddr", 48, false],
+        ["etherType", 16, false]
+      ]
+    },
+    {
+      "name" : "ipv4_t",
+      "id" : 3,
+      "fields" : [
+        ["version", 4, false],
+        ["ihl", 4, false],
+        ["diffserv", 8, false],
+        ["totalLen", 16, false],
+        ["identification", 16, false],
+        ["flags", 3, false],
+        ["fragOffset", 13, false],
+        ["ttl", 8, false],
+        ["protocol", 8, false],
+        ["hdrChecksum", 16, false],
+        ["srcAddr", 32, false],
+        ["dstAddr", 32, false]
+      ]
+    },
+    {
+      "name" : "tcp_t",
+      "id" : 4,
+      "fields" : [
+        ["srcPort", 16, false],
+        ["dstPort", 16, false],
+        ["seqNo", 32, false],
+        ["ackNo", 32, false],
+        ["dataOffset", 4, false],
+        ["res", 3, false],
+        ["ecn", 3, false],
+        ["ctrl", 6, false],
+        ["window", 16, false],
+        ["checksum", 16, false],
+        ["urgentPtr", 16, false]
+      ]
+    }
+  ],
+  "headers" : [
+    {
+      "name" : "scalars",
+      "id" : 0,
+      "header_type" : "scalars_0",
+      "metadata" : true,
+      "pi_omit" : true
+    },
+    {
+      "name" : "standard_metadata",
+      "id" : 1,
+      "header_type" : "standard_metadata",
+      "metadata" : true,
+      "pi_omit" : true
+    },
+    {
+      "name" : "ethernet",
+      "id" : 2,
+      "header_type" : "ethernet_t",
+      "metadata" : false,
+      "pi_omit" : true
+    },
+    {
+      "name" : "ipv4",
+      "id" : 3,
+      "header_type" : "ipv4_t",
+      "metadata" : false,
+      "pi_omit" : true
+    },
+    {
+      "name" : "tcp",
+      "id" : 4,
+      "header_type" : "tcp_t",
+      "metadata" : false,
+      "pi_omit" : true
+    }
+  ],
+  "header_stacks" : [],
+  "header_union_types" : [],
+  "header_unions" : [],
+  "header_union_stacks" : [],
+  "field_lists" : [],
+  "errors" : [
+    ["NoError", 0],
+    ["PacketTooShort", 1],
+    ["NoMatch", 2],
+    ["StackOutOfBounds", 3],
+    ["HeaderTooShort", 4],
+    ["ParserTimeout", 5],
+    ["ParserInvalidArgument", 6]
+  ],
+  "enums" : [],
+  "parsers" : [
+    {
+      "name" : "parser",
+      "id" : 0,
+      "init_state" : "start",
+      "parse_states" : [
+        {
+          "name" : "start",
+          "id" : 0,
+          "parser_ops" : [
+            {
+              "parameters" : [
+                {
+                  "type" : "regular",
+                  "value" : "ethernet"
+                }
+              ],
+              "op" : "extract"
+            }
+          ],
+          "transitions" : [
+            {
+              "type" : "hexstr",
+              "value" : "0x0800",
+              "mask" : null,
+              "next_state" : "parse_ipv4"
+            },
+            {
+              "type" : "default",
+              "value" : null,
+              "mask" : null,
+              "next_state" : null
+            }
+          ],
+          "transition_key" : [
+            {
+              "type" : "field",
+              "value" : ["ethernet", "etherType"]
+            }
+          ]
+        },
+        {
+          "name" : "parse_ipv4",
+          "id" : 1,
+          "parser_ops" : [
+            {
+              "parameters" : [
+                {
+                  "type" : "regular",
+                  "value" : "ipv4"
+                }
+              ],
+              "op" : "extract"
+            }
+          ],
+          "transitions" : [
+            {
+              "type" : "hexstr",
+              "value" : "0x06",
+              "mask" : null,
+              "next_state" : "parse_tcp"
+            }
+          ],
+          "transition_key" : [
+            {
+              "type" : "field",
+              "value" : ["ipv4", "protocol"]
+            }
+          ]
+        },
+        {
+          "name" : "parse_tcp",
+          "id" : 2,
+          "parser_ops" : [
+            {
+              "parameters" : [
+                {
+                  "type" : "regular",
+                  "value" : "tcp"
+                }
+              ],
+              "op" : "extract"
+            }
+          ],
+          "transitions" : [
+            {
+              "type" : "default",
+              "value" : null,
+              "mask" : null,
+              "next_state" : null
+            }
+          ],
+          "transition_key" : []
+        }
+      ]
+    }
+  ],
+  "parse_vsets" : [],
+  "deparsers" : [
+    {
+      "name" : "deparser",
+      "id" : 0,
+      "source_info" : {
+        "filename" : "basic.p4",
+        "line" : 315,
+        "column" : 8,
+        "source_fragment" : "MyDeparser"
+      },
+      "order" : ["ethernet", "ipv4", "tcp"],
+      "primitives" : []
+    }
+  ],
+  "meter_arrays" : [],
+  "counter_arrays" : [],
+  "register_arrays" : [
+    {
+      "name" : "MyIngress.r_srcAddr",
+      "id" : 0,
+      "source_info" : {
+        "filename" : "basic.p4",
+        "line" : 198,
+        "column" : 31,
+        "source_fragment" : "r_srcAddr"
+      },
+      "size" : 65536,
+      "bitwidth" : 32
+    },
+    {
+      "name" : "MyIngress.r_dstAddr",
+      "id" : 1,
+      "source_info" : {
+        "filename" : "basic.p4",
+        "line" : 199,
+        "column" : 31,
+        "source_fragment" : "r_dstAddr"
+      },
+      "size" : 65536,
+      "bitwidth" : 32
+    },
+    {
+      "name" : "MyIngress.r_startTime",
+      "id" : 2,
+      "source_info" : {
+        "filename" : "basic.p4",
+        "line" : 200,
+        "column" : 29,
+        "source_fragment" : "r_startTime"
+      },
+      "size" : 65536,
+      "bitwidth" : 48
+    },
+    {
+      "name" : "MyIngress.r_endTime",
+      "id" : 3,
+      "source_info" : {
+        "filename" : "basic.p4",
+        "line" : 201,
+        "column" : 29,
+        "source_fragment" : "r_endTime"
+      },
+      "size" : 65536,
+      "bitwidth" : 48
+    },
+    {
+      "name" : "MyIngress.r_totalSize",
+      "id" : 4,
+      "source_info" : {
+        "filename" : "basic.p4",
+        "line" : 202,
+        "column" : 29,
+        "source_fragment" : "r_totalSize"
+      },
+      "size" : 65536,
+      "bitwidth" : 64
+    },
+    {
+      "name" : "MyIngress.r_srcPort",
+      "id" : 5,
+      "source_info" : {
+        "filename" : "basic.p4",
+        "line" : 203,
+        "column" : 29,
+        "source_fragment" : "r_srcPort"
+      },
+      "size" : 65536,
+      "bitwidth" : 16
+    },
+    {
+      "name" : "MyIngress.r_dstPort",
+      "id" : 6,
+      "source_info" : {
+        "filename" : "basic.p4",
+        "line" : 204,
+        "column" : 29,
+        "source_fragment" : "r_dstPort"
+      },
+      "size" : 65536,
+      "bitwidth" : 16
+    },
+    {
+      "name" : "MyIngress.r_exist",
+      "id" : 7,
+      "source_info" : {
+        "filename" : "basic.p4",
+        "line" : 205,
+        "column" : 28,
+        "source_fragment" : "r_exist"
+      },
+      "size" : 65536,
+      "bitwidth" : 1
+    },
+    {
+      "name" : "MyIngress.r_duration",
+      "id" : 8,
+      "source_info" : {
+        "filename" : "basic.p4",
+        "line" : 206,
+        "column" : 29,
+        "source_fragment" : "r_duration"
+      },
+      "size" : 65536,
+      "bitwidth" : 48
+    },
+    {
+      "name" : "MyIngress.r_index",
+      "id" : 9,
+      "source_info" : {
+        "filename" : "basic.p4",
+        "line" : 208,
+        "column" : 29,
+        "source_fragment" : "r_index"
+      },
+      "size" : 65536,
+      "bitwidth" : 32
+    },
+    {
+      "name" : "MyIngress.r_counter",
+      "id" : 10,
+      "source_info" : {
+        "filename" : "basic.p4",
+        "line" : 209,
+        "column" : 25,
+        "source_fragment" : "r_counter"
+      },
+      "size" : 1,
+      "bitwidth" : 32
+    }
+  ],
+  "calculations" : [
+    {
+      "name" : "calc",
+      "id" : 0,
+      "algo" : "crc16",
+      "input" : [
+        {
+          "type" : "field",
+          "value" : ["ipv4", "srcAddr"]
+        },
+        {
+          "type" : "field",
+          "value" : ["ipv4", "dstAddr"]
+        },
+        {
+          "type" : "field",
+          "value" : ["ipv4", "protocol"]
+        },
+        {
+          "type" : "field",
+          "value" : ["tcp", "srcPort"]
+        },
+        {
+          "type" : "field",
+          "value" : ["tcp", "dstPort"]
+        }
+      ]
+    },
+    {
+      "name" : "calc_0",
+      "id" : 1,
+      "source_info" : {
+        "filename" : "basic.p4",
+        "line" : 293,
+        "column" : 1,
+        "source_fragment" : "update_checksum( ..."
+      },
+      "algo" : "csum16",
+      "input" : [
+        {
+          "type" : "field",
+          "value" : ["ipv4", "version"]
+        },
+        {
+          "type" : "field",
+          "value" : ["ipv4", "ihl"]
+        },
+        {
+          "type" : "field",
+          "value" : ["ipv4", "diffserv"]
+        },
+        {
+          "type" : "field",
+          "value" : ["ipv4", "totalLen"]
+        },
+        {
+          "type" : "field",
+          "value" : ["ipv4", "identification"]
+        },
+        {
+          "type" : "field",
+          "value" : ["ipv4", "flags"]
+        },
+        {
+          "type" : "field",
+          "value" : ["ipv4", "fragOffset"]
+        },
+        {
+          "type" : "field",
+          "value" : ["ipv4", "ttl"]
+        },
+        {
+          "type" : "field",
+          "value" : ["ipv4", "protocol"]
+        },
+        {
+          "type" : "field",
+          "value" : ["ipv4", "srcAddr"]
+        },
+        {
+          "type" : "field",
+          "value" : ["ipv4", "dstAddr"]
+        }
+      ]
+    }
+  ],
+  "learn_lists" : [],
+  "actions" : [
+    {
+      "name" : "NoAction",
+      "id" : 0,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "MyIngress.drop",
+      "id" : 1,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "mark_to_drop",
+          "parameters" : [
+            {
+              "type" : "header",
+              "value" : "standard_metadata"
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 176,
+            "column" : 8,
+            "source_fragment" : "mark_to_drop(standard_metadata)"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "MyIngress.compute_hash",
+      "id" : 2,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "modify_field_with_hash_based_offset",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.flowID"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x0000"
+            },
+            {
+              "type" : "calculation",
+              "value" : "calc"
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x00010000"
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 185,
+            "column" : 8,
+            "source_fragment" : "hash(meta.flowID, HashAlgorithm.crc16, (bit<16>)0, {hdr.ipv4.srcAddr, ..."
+          }
+        }
+      ]
+    },
+    {
+      "name" : "MyIngress.forward",
+      "id" : 3,
+      "runtime_data" : [
+        {
+          "name" : "port",
+          "bitwidth" : 9
+        }
+      ],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["standard_metadata", "egress_spec"]
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 0
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 213,
+            "column" : 8,
+            "source_fragment" : "standard_metadata.egress_spec = port"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "basic250",
+      "id" : 4,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "register_write",
+          "parameters" : [
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.r_srcAddr"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.flowID"]
+            },
+            {
+              "type" : "field",
+              "value" : ["ipv4", "srcAddr"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 250,
+            "column" : 16,
+            "source_fragment" : "r_srcAddr.write(meta.flowID, hdr.ipv4.srcAddr)"
+          }
+        },
+        {
+          "op" : "register_write",
+          "parameters" : [
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.r_dstAddr"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.flowID"]
+            },
+            {
+              "type" : "field",
+              "value" : ["ipv4", "dstAddr"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 251,
+            "column" : 16,
+            "source_fragment" : "r_dstAddr.write(meta.flowID, hdr.ipv4.dstAddr)"
+          }
+        },
+        {
+          "op" : "register_write",
+          "parameters" : [
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.r_startTime"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.flowID"]
+            },
+            {
+              "type" : "field",
+              "value" : ["standard_metadata", "ingress_global_timestamp"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 252,
+            "column" : 16,
+            "source_fragment" : "r_startTime.write(meta.flowID, standard_metadata.ingress_global_timestamp)"
+          }
+        },
+        {
+          "op" : "register_write",
+          "parameters" : [
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.r_endTime"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.flowID"]
+            },
+            {
+              "type" : "field",
+              "value" : ["standard_metadata", "ingress_global_timestamp"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 253,
+            "column" : 16,
+            "source_fragment" : "r_endTime.write(meta.flowID, standard_metadata.ingress_global_timestamp)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "field",
+                    "value" : ["ipv4", "totalLen"]
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffffffffffffffff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 254,
+            "column" : 36,
+            "source_fragment" : "(bit<64>) hdr.ipv4.totalLen"
+          }
+        },
+        {
+          "op" : "register_write",
+          "parameters" : [
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.r_totalSize"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.flowID"]
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 255,
+            "column" : 16,
+            "source_fragment" : "r_totalSize.write(meta.flowID, temporary)"
+          }
+        },
+        {
+          "op" : "register_write",
+          "parameters" : [
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.r_srcPort"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.flowID"]
+            },
+            {
+              "type" : "field",
+              "value" : ["tcp", "srcPort"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 256,
+            "column" : 16,
+            "source_fragment" : "r_srcPort.write(meta.flowID, hdr.tcp.srcPort)"
+          }
+        },
+        {
+          "op" : "register_write",
+          "parameters" : [
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.r_dstPort"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.flowID"]
+            },
+            {
+              "type" : "field",
+              "value" : ["tcp", "dstPort"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 257,
+            "column" : 16,
+            "source_fragment" : "r_dstPort.write(meta.flowID, hdr.tcp.dstPort)"
+          }
+        },
+        {
+          "op" : "register_write",
+          "parameters" : [
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.r_exist"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.flowID"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x01"
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 258,
+            "column" : 16,
+            "source_fragment" : "r_exist.write(meta.flowID, 1)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_0"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "+",
+                      "left" : {
+                        "type" : "field",
+                        "value" : ["scalars", "counter_value_0"]
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x00000001"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffffffff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 260,
+            "column" : 35,
+            "source_fragment" : "counter_value + 1"
+          }
+        },
+        {
+          "op" : "register_write",
+          "parameters" : [
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.r_counter"
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x00000000"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_0"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 260,
+            "column" : 16,
+            "source_fragment" : "r_counter.write(0, counter_value + 1)"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "basic265",
+      "id" : 5,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "register_write",
+          "parameters" : [
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.r_endTime"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.flowID"]
+            },
+            {
+              "type" : "field",
+              "value" : ["standard_metadata", "ingress_global_timestamp"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 265,
+            "column" : 16,
+            "source_fragment" : "r_endTime.write(meta.flowID, standard_metadata.ingress_global_timestamp)"
+          }
+        },
+        {
+          "op" : "register_read",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "old_size_0"]
+            },
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.r_totalSize"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.flowID"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 268,
+            "column" : 16,
+            "source_fragment" : "r_totalSize.read(old_size, meta.flowID)"
+          }
+        },
+        {
+          "op" : "register_read",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "initial_startTime_0"]
+            },
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.r_startTime"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.flowID"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 270,
+            "column" : 16,
+            "source_fragment" : "r_startTime.read(initial_startTime, meta.flowID)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_1"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "-",
+                      "left" : {
+                        "type" : "field",
+                        "value" : ["standard_metadata", "ingress_global_timestamp"]
+                      },
+                      "right" : {
+                        "type" : "field",
+                        "value" : ["scalars", "initial_startTime_0"]
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffffffffffff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 271,
+            "column" : 46,
+            "source_fragment" : "standard_metadata.ingress_global_timestamp - initial_startTime"
+          }
+        },
+        {
+          "op" : "register_write",
+          "parameters" : [
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.r_duration"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.flowID"]
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_1"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 271,
+            "column" : 16,
+            "source_fragment" : "r_duration.write(meta.flowID, standard_metadata.ingress_global_timestamp - initial_startTime)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_2"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "+",
+                      "left" : {
+                        "type" : "field",
+                        "value" : ["scalars", "old_size_0"]
+                      },
+                      "right" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "&",
+                          "left" : {
+                            "type" : "field",
+                            "value" : ["ipv4", "totalLen"]
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0xffffffffffffffff"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffffffffffffffff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 272,
+            "column" : 47,
+            "source_fragment" : "old_size + (bit<64>) hdr.ipv4.totalLen"
+          }
+        },
+        {
+          "op" : "register_write",
+          "parameters" : [
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.r_totalSize"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.flowID"]
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_2"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 272,
+            "column" : 16,
+            "source_fragment" : "r_totalSize.write(meta.flowID, old_size + (bit<64>) hdr.ipv4.totalLen)"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "basic239",
+      "id" : 6,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "register_read",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "counter_value_0"]
+            },
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.r_counter"
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x00000000"
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 239,
+            "column" : 12,
+            "source_fragment" : "r_counter.read(counter_value, 0)"
+          }
+        },
+        {
+          "op" : "register_write",
+          "parameters" : [
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.r_index"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "counter_value_0"]
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.flowID"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 241,
+            "column" : 12,
+            "source_fragment" : "r_index.write(counter_value, meta.flowID)"
+          }
+        },
+        {
+          "op" : "register_read",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "exist_value_0"]
+            },
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.r_exist"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.flowID"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 246,
+            "column" : 12,
+            "source_fragment" : "r_exist.read(exist_value, meta.flowID)"
+          }
+        }
+      ]
+    }
+  ],
+  "pipelines" : [
+    {
+      "name" : "ingress",
+      "id" : 0,
+      "source_info" : {
+        "filename" : "basic.p4",
+        "line" : 167,
+        "column" : 8,
+        "source_fragment" : "MyIngress"
+      },
+      "init_table" : "MyIngress.forwarding",
+      "tables" : [
+        {
+          "name" : "MyIngress.forwarding",
+          "id" : 0,
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 216,
+            "column" : 10,
+            "source_fragment" : "forwarding"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "name" : "standard_metadata.ingress_port",
+              "target" : ["standard_metadata", "ingress_port"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [3, 1, 0],
+          "actions" : ["MyIngress.forward", "MyIngress.drop", "NoAction"],
+          "base_default_next" : "tbl_compute_hash",
+          "next_tables" : {
+            "MyIngress.forward" : "tbl_compute_hash",
+            "MyIngress.drop" : "tbl_compute_hash",
+            "NoAction" : "tbl_compute_hash"
+          },
+          "default_entry" : {
+            "action_id" : 1,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        },
+        {
+          "name" : "tbl_compute_hash",
+          "id" : 1,
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 235,
+            "column" : 12,
+            "source_fragment" : "compute_hash()"
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [2],
+          "actions" : ["MyIngress.compute_hash"],
+          "base_default_next" : "tbl_basic239",
+          "next_tables" : {
+            "MyIngress.compute_hash" : "tbl_basic239"
+          },
+          "default_entry" : {
+            "action_id" : 2,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "tbl_basic239",
+          "id" : 2,
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 239,
+            "column" : 12,
+            "source_fragment" : "r_counter.read(counter_value, 0); ..."
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [6],
+          "actions" : ["basic239"],
+          "base_default_next" : "node_5",
+          "next_tables" : {
+            "basic239" : "node_5"
+          },
+          "default_entry" : {
+            "action_id" : 6,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "tbl_basic250",
+          "id" : 3,
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 250,
+            "column" : 16,
+            "source_fragment" : "r_srcAddr.write(meta.flowID, hdr.ipv4.srcAddr); ..."
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [4],
+          "actions" : ["basic250"],
+          "base_default_next" : null,
+          "next_tables" : {
+            "basic250" : null
+          },
+          "default_entry" : {
+            "action_id" : 4,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "tbl_basic265",
+          "id" : 4,
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 265,
+            "column" : 16,
+            "source_fragment" : "r_endTime.write(meta.flowID, standard_metadata.ingress_global_timestamp); ..."
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [5],
+          "actions" : ["basic265"],
+          "base_default_next" : null,
+          "next_tables" : {
+            "basic265" : null
+          },
+          "default_entry" : {
+            "action_id" : 5,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        }
+      ],
+      "action_profiles" : [],
+      "conditionals" : [
+        {
+          "name" : "node_5",
+          "id" : 0,
+          "source_info" : {
+            "filename" : "basic.p4",
+            "line" : 249,
+            "column" : 16,
+            "source_fragment" : "exist_value == 0"
+          },
+          "expression" : {
+            "type" : "expression",
+            "value" : {
+              "op" : "==",
+              "left" : {
+                "type" : "field",
+                "value" : ["scalars", "exist_value_0"]
+              },
+              "right" : {
+                "type" : "hexstr",
+                "value" : "0x00"
+              }
+            }
+          },
+          "true_next" : "tbl_basic250",
+          "false_next" : "tbl_basic265"
+        }
+      ]
+    },
+    {
+      "name" : "egress",
+      "id" : 1,
+      "source_info" : {
+        "filename" : "basic.p4",
+        "line" : 281,
+        "column" : 8,
+        "source_fragment" : "MyEgress"
+      },
+      "init_table" : null,
+      "tables" : [],
+      "action_profiles" : [],
+      "conditionals" : []
+    }
+  ],
+  "checksums" : [
+    {
+      "name" : "cksum",
+      "id" : 0,
+      "source_info" : {
+        "filename" : "basic.p4",
+        "line" : 293,
+        "column" : 1,
+        "source_fragment" : "update_checksum( ..."
+      },
+      "target" : ["ipv4", "hdrChecksum"],
+      "type" : "generic",
+      "calculation" : "calc_0",
+      "verify" : false,
+      "update" : true,
+      "if_cond" : {
+        "type" : "expression",
+        "value" : {
+          "op" : "d2b",
+          "left" : null,
+          "right" : {
+            "type" : "field",
+            "value" : ["ipv4", "$valid$"]
+          }
+        }
+      }
+    }
+  ],
+  "force_arith" : [],
+  "extern_instances" : [],
+  "field_aliases" : [
+    [
+      "queueing_metadata.enq_timestamp",
+      ["standard_metadata", "enq_timestamp"]
+    ],
+    [
+      "queueing_metadata.enq_qdepth",
+      ["standard_metadata", "enq_qdepth"]
+    ],
+    [
+      "queueing_metadata.deq_timedelta",
+      ["standard_metadata", "deq_timedelta"]
+    ],
+    [
+      "queueing_metadata.deq_qdepth",
+      ["standard_metadata", "deq_qdepth"]
+    ],
+    [
+      "intrinsic_metadata.ingress_global_timestamp",
+      ["standard_metadata", "ingress_global_timestamp"]
+    ],
+    [
+      "intrinsic_metadata.egress_global_timestamp",
+      ["standard_metadata", "egress_global_timestamp"]
+    ],
+    [
+      "intrinsic_metadata.mcast_grp",
+      ["standard_metadata", "mcast_grp"]
+    ],
+    [
+      "intrinsic_metadata.egress_rid",
+      ["standard_metadata", "egress_rid"]
+    ],
+    [
+      "intrinsic_metadata.priority",
+      ["standard_metadata", "priority"]
+    ]
+  ],
+  "program" : "./basic.p4i",
+  "__meta__" : {
+    "version" : [2, 23],
+    "compiler" : "https://github.com/p4lang/p4c"
+  }
+}
