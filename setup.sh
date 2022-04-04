@@ -15,7 +15,7 @@ sleep 5
 echo -e "\nPopulating tables with forwarding rules...\n"
 simple_switch_CLI < ~/lab2/rules.cmd
 sleep 5
-echo -e "`nComplete!\n"
+echo -e "\nComplete!\n"
 
 echo -e "\nDownloading additional files...\n"
 
