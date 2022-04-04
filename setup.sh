@@ -1,6 +1,7 @@
 #!bin/bash
 
 echo "Packet Monitoring Setup Script, written by Samuel Dao."
+sleep 2 
 
 echo -e "\nDownloading P4 configuration file...\n"
 wget https://raw.githubusercontent.com/SUPERYELLOWBEAVER87/P4-Packet-Monitoring/main/basic.json
@@ -8,7 +9,7 @@ sleep 5
 
 echo -e "\nConfigurating interfaces...\n"
 simple_switch -i 0@s1-eth0 -i 1@s1-eth1 --nanolog ipc:///tmp/bm-log.ipc basic.json &
-echo -e"\nComplete!\n"
+echo -e "\nComplete!\n"
 
 sleep 5
 
