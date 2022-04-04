@@ -203,6 +203,7 @@ control MyIngress(inout headers hdr,
     register<bit<16>>(65536) r_srcPort;
     register<bit<16>>(65536) r_dstPort;
     register<bit<1>>(65536) r_exist;
+    register<bit<48>>(65536) r_duration;
 
     register<bit<32>>(65536) r_index;
     register<bit<32>>(1) r_counter;
@@ -265,6 +266,9 @@ control MyIngress(inout headers hdr,
                 //Increment total length register value
                 bit<64> old_size;
                 r_totalSize.read(old_size, meta.flowID);
+                bit<48> initial_startTime;
+                r_startTime.read(initial_startTime, meta.flowID);
+                r_duration.write(meta.flowID, standard_metadata.ingress_global_timestamp - initial_startTime);
                 r_totalSize.write(meta.flowID, old_size + (bit<64>) hdr.ipv4.totalLen);
             }
     }
@@ -312,7 +316,7 @@ control MyDeparser(packet_out packet, in headers hdr) {
     apply {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv4);
-	packet.emit(hdr.tcp);
+	    packet.emit(hdr.tcp);
     }
 }
 
