@@ -1,10 +1,8 @@
+#!/usr/bin/env python3
 import ipaddress
 import sys
 
-if(len(sys.argv) <= 1):
-    filename = input("Enter in the name of the register output text file.\n")
-else:
-    filename = sys.argv[1]
+filename = "register_value"
 
 print("\n\nP4 Register Formatter\n")
 
@@ -38,7 +36,11 @@ with open(filename, 'r') as file:
             duration = int(registerValues["r_endTime"]) - int(registerValues["r_startTime"])
             registerValues["r_duration"] = int(duration)
 
-rate = int(registerValues["r_totalSize"]) / int(registerValues["r_duration"])
+
+if (duration != 0):
+    rate = float(registerValues["r_totalSize"]) / float(registerValues["r_duration"])
+else:
+    rate = registerValues["r_totalSize"]
 
 print("Statistics Summary for FlowID: "+str(index)+"\n")
 
