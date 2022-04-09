@@ -1,8 +1,4 @@
 #!bin/bash
-
-echo "Packet Monitoring Setup Script, written by Samuel Dao."
-sleep 2 
-
 echo -e "\nDownloading P4 configuration file...\n"
 wget https://raw.githubusercontent.com/SUPERYELLOWBEAVER87/P4-Packet-Monitoring/main/basic.json
 sleep 5
