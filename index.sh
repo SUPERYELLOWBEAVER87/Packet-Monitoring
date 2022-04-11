@@ -3,8 +3,11 @@ if [ -f index.cmd ]
 then
     rm index.cmd
 fi
-echo -e "Enter register index:\n"
-read index
+if [ -z $1 ]
+then
+    echo -e "Enter register index:\n"
+    read index
+fi
 echo "register_read r_srcAddr $index" >> index.cmd
 echo "register_read r_dstAddr $index" >> index.cmd
 echo "register_read r_startTime $index" >> index.cmd
