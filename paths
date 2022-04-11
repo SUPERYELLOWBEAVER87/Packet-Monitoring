@@ -1,5 +1,0 @@
-modify /usr/local/lib/python3.5/site-packages/runtime_CLI.py
-
-replace that file with a new one
-
-output file in /behavioral-model
