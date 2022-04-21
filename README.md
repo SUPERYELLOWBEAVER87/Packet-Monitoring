@@ -15,20 +15,25 @@ The goal of this is to use the capability of P4 devices to monitor and track flo
  
 PROJECT COMPLETE, STEPS TO REPLICATE PACKET MONITOR
 
-Use Lab02 on a pod that has internet to download github files.
 
-Launch Mininet Lab 2 topology. Run it and ensure you have no errors. Use sudo mn -c in a terminal to clean the topology if needed.
+**STEPS TO RECREATE PACKET MONITORING ENVIROMENT**
+Use Lab02 on Pod 5707
 
-Navigate to this github repo on the VM. Copy the link to the RAW version of the setup.sh script.
+1. Navigate to: github.com/superyellowbeaver87
+2. Copy the **RAW LINK** of the setup.sh file.
+3. Launch Mininet from the desktop
+4. Click **RUN** in the bottom left-hand corner.
+5. Open up a terminal on the switch.
+6. Install wget module on the switch, using the following command: apt-get install wget
+7. Type **Y** and click Enter when the switch asks you for confirmation.
+8. Install the setup script using: wget <**LINK TO SETUP.SH SCRIPT FROM GITHUB**>, use Shift + Insert to paste in Linux.
+9. Once download is complete, run the setup script using: bash setup.sh
+10. Packet monitoring enviroment is now ready!
 
-Launch a terminal in Mininet topology on s1.
+Testing commands:
+Send **single packet flows** use: ./send.py on Host 1 and ./recv.py on Host 2.
+Send **stream of packets** use: ping 10.0.0.2 on Host 1.
 
-Install wget using: apt-get install wget
-When it asks you for confirmation type Y and click Enter.
-
-Download the setup.sh script and run it using: wget https://raw.githubusercontent.com/SUPERYELLOWBEAVER87/P4-Packet-Monitoring/main/runtime_CLI.py
-
-If you use the command 'ls' you should now see the script in your directory.
-Run it with bash: bash setup.sh
-
-Your enviroment is now setup to use the packet monitoring P4 script.
+Get the index from the registers: **register_read r_index <INDEX NUMBER>**
+Read the index in the switch by using: **bash read.sh**, then type in the index.
+ 
