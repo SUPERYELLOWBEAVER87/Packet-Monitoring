@@ -1,8 +1,9 @@
 # P4-Packet-Monitoring
-The goal of this is to use the capability of P4 devices to monitor and track flows, and collect corresponding statistics. 
- 
- Monitoring devices such as Netflow collect active IP network traffic as it flowsi n or out of an interface. While Netflow and other legacy protocols provide visibility and help 
- identifying network problems, they are not granular (resolution is typically in order of seconds) and are subject to proprietary implementations.
+
+Monitoring devices such as Netflow collect active IP network traffic as it flows in or out
+of an interface. While Netflow and other legacy protocols provide visibility and help
+identifying network problems, they are not granular (resolution is typically in the order of
+seconds) and are subject to proprietary implementations.
  
  ## Simulation Network Topology
  ![image](https://user-images.githubusercontent.com/78384615/207913796-a7a8ed5b-224e-442f-8e1e-8156a3e91c48.png)
@@ -10,7 +11,10 @@ The goal of this is to use the capability of P4 devices to monitor and track flo
  ## Match-Action Pipeline, Most of the logic will be implemented in the Ingress:
 ![image](https://user-images.githubusercontent.com/78384615/208183620-3044829b-28d0-487b-aa11-d8804d611a94.png)
  
- #### Use P4 and collect the following statistics. 
+ #### Goals.
+ The goal of this project is to use the capability of P4 devices to monitor and track flows,
+and collect corresponding statistics. Examples of statistics to be collected are
+
  * Source and Destination IP addresses
  * Source and Destination transport-layer ports
  * Amount of unidirectional traffic (bytes)
@@ -18,9 +22,7 @@ The goal of this is to use the capability of P4 devices to monitor and track flo
  * End Time
  * Rate (bits per second)
  
- 
 PROJECT COMPLETE, STEPS TO REPLICATE PACKET MONITOR
-
 
 #### STEPS TO RECREATE PACKET MONITORING ENVIROMENT**
 Use Lab02 on Pod 5707
