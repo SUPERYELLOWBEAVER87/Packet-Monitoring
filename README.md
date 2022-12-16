@@ -1,7 +1,4 @@
 # P4-Packet-Monitoring
-![image](https://user-images.githubusercontent.com/78384615/208184665-a624c9ef-8de5-47b7-b867-80eaceba7a3d.png)
-
-
 Monitoring devices such as Netflow collect active IP network traffic as it flows in or out
 of an interface. While Netflow and other legacy protocols provide visibility and help
 identifying network problems, they are not granular (resolution is typically in the order of
