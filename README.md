@@ -15,7 +15,7 @@ After compiling a P4 program, two files are generated. A data plane configuratio
  ### Match-Action Pipeline, Most of the logic will be implemented in the Ingress:
 ![image](https://user-images.githubusercontent.com/78384615/208183620-3044829b-28d0-487b-aa11-d8804d611a94.png)
  
- ### Goals.
+ ### Goals
  The goal of this project is to use the capability of P4 devices to monitor and track flows,
 and collect corresponding statistics. Examples of statistics to be collected are
 
