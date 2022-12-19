@@ -4,18 +4,18 @@ of an interface. While Netflow and other legacy protocols provide visibility and
 identifying network problems, they are not granular (resolution is typically in the order of
 seconds) and are subject to proprietary implementations.
 
-#### Workflow of a P4 Program
+### Workflow of a P4 Program
 After compiling a P4 program, two files are generated. A data plane configuration file that implements forwarding logic that includes instructions and resource mappings for the target. Then it generates runtime APIs that are used by the control plane to interact with the data plane. For example adding and removing entries from match-action tables or reading/writing the state of objects. This allows users to manipulate tables and objects.
 
 ![image](https://user-images.githubusercontent.com/78384615/208184459-4b776b49-c33e-4daf-9e44-e89725d857b8.png)
  
- #### Simulation Network Topology
+ ### Simulation Network Topology
  ![image](https://user-images.githubusercontent.com/78384615/207913796-a7a8ed5b-224e-442f-8e1e-8156a3e91c48.png)
  
- #### Match-Action Pipeline, Most of the logic will be implemented in the Ingress:
+ ### Match-Action Pipeline, Most of the logic will be implemented in the Ingress:
 ![image](https://user-images.githubusercontent.com/78384615/208183620-3044829b-28d0-487b-aa11-d8804d611a94.png)
  
- #### Goals.
+ ### Goals.
  The goal of this project is to use the capability of P4 devices to monitor and track flows,
 and collect corresponding statistics. Examples of statistics to be collected are
 
