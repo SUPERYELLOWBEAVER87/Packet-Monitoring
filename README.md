@@ -26,27 +26,24 @@ The goal of this project is to use the capability of P4 devices to monitor and t
 ## Implementation
 The research will take over the course of eight weeks from February 1, 2022 - April 22, 2022.
 
+The V1Model is seperated into several different stages:
+
+`headers` - contains the packet headers and metadata definitions
+
+`parser` - contains the implementation of the programmable parser
+
+`ingress` - contains the ingress control block that includes match-action tables
+
+`egress` - contains the egress control block
+
+`deparser` - contains the code that verifies and computes checksums
+
+![image](https://user-images.githubusercontent.com/78384615/209098259-d8c992c5-2f32-456d-91f2-fff654d22a66.png)
+
 ### Workflow of a P4 Program
 After compiling a P4 program, two files are generated. A data plane configuration file that implements forwarding logic that includes instructions and resource mappings for the target. Then it generates runtime APIs that are used by the control plane to interact with the data plane. For example adding and removing entries from match-action tables or reading/writing the state of objects. This allows users to manipulate tables and objects.
 
 ![image](https://user-images.githubusercontent.com/78384615/208184459-4b776b49-c33e-4daf-9e44-e89725d857b8.png)
- 
- ### Simulation Network Topology
- ![image](https://user-images.githubusercontent.com/78384615/207913796-a7a8ed5b-224e-442f-8e1e-8156a3e91c48.png)
- 
- ### Match-Action Pipeline, Most of the logic will be implemented in the Ingress:
-![image](https://user-images.githubusercontent.com/78384615/208183620-3044829b-28d0-487b-aa11-d8804d611a94.png)
- 
- ### Goals
- The goal of this project is to use the capability of P4 devices to monitor and track flows,
-and collect corresponding statistics. Examples of statistics to be collected are
-
- * Source and Destination IP addresses
- * Source and Destination transport-layer ports
- * Amount of unidirectional traffic (bytes)
- * Start Time
- * End Time
- * Rate (bits per second)
  
 PROJECT COMPLETE, STEPS TO REPLICATE PACKET MONITOR
 
