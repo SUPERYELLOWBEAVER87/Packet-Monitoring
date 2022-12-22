@@ -45,9 +45,11 @@ Ethernet, IPv4, and TCP classes along with metadata structures will be defined i
 
 The `parser` block will be parse and ethernet, IPv4, and TCP headers.
 
-The `ingress` block is where the majority of implementation will take place. In order to store data pertaining to the various different flows, `registers` will be used. Their size will correspond to the byte size of the statistic, for example since IP Addresses have a byte size of 32, the registers will also be a byte size of 32 in order to store the data. The size of the registers will be 655536, which will be explained later on.
+The `ingress` block is where the majority of implementation will take place. In order to store data pertaining to the various different flows, `registers` will be used. Their size will correspond to the byte size of the statistic, for example since IP Addresses have a byte size of 32, the registers will also be a byte size of 32 in order to store the data. The size of the registers will be `<655536>`, which will be explained later on.
 
 In order to uniquely identify **flows**, or streams of data that contain the same source/destination IP address, and source/destination port, we must use a hashing algorithm. Luckily, P4 has innate function to hash these values for us, specifically the hashing algorithm, [CRC16](https://github.com/p4lang/tutorials/issues/188). In doing this the function returns a unique value specific to that flow, in other words a `flowID`. This will be used as the primary way to identify and index into registers.
+
+The function will specifically spit out a max value of `<65536> or `2^16` due to the nature of the hashing algorithm in use.
 
 ### Workflow of a P4 Program
 After compiling a P4 program, two files are generated. A data plane configuration file that implements forwarding logic that includes instructions and resource mappings for the target. Then it generates runtime APIs that are used by the control plane to interact with the data plane. For example adding and removing entries from match-action tables or reading/writing the state of objects. This allows users to manipulate tables and objects.
