@@ -10,6 +10,8 @@ Due to the current shortage of cyber security professionals in the American mili
 ### My Research Topic: [Implementing a Monitoring Device using a P4 Programmable Switch](http://ce.sc.edu/cyberinfra/docs/onr_projects/spring2022/P4%20monitoring.pdf)
 Monitoring devices such as Netflow collect active IP network traffic as it flows in or out of an interface. While Netflow and other legacy protocols provide visibility and help identifying network problems, they are not granular (resolution is typically in the order of seconds) and are subject to proprietary implementations.
 
+For example in terms of granularity, some traditional network devices may record start and end times in terms of seconds, while P4 enabled network devices have the ability to record start and end times in *microseconds*.
+
 
 The goal of this project is to use the capability of P4 devices to monitor and track flows, and collect corresponding statistics. Examples of statistics to be collected are:
 ```
