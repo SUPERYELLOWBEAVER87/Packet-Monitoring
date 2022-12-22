@@ -55,23 +55,5 @@ The function will specifically spit out a max value of `<65536>` or `2^16` due t
 After compiling a P4 program, two files are generated. A data plane configuration file that implements forwarding logic that includes instructions and resource mappings for the target. Then it generates runtime APIs that are used by the control plane to interact with the data plane. For example adding and removing entries from match-action tables or reading/writing the state of objects. This allows users to manipulate tables and objects.
 
 ![image](https://user-images.githubusercontent.com/78384615/208184459-4b776b49-c33e-4daf-9e44-e89725d857b8.png)
-
-## Simulation Network Topology
-
-![image](https://user-images.githubusercontent.com/78384615/209104798-3f3b3e1b-25a3-41bb-9271-1f1c0e1061a2.png)
-
-
-### Instructions to replicate
-
-1. Navigate to: github.com/superyellowbeaver87
-2. Copy the **RAW LINK** of the setup.sh file.
-3. Launch Mininet from the desktop
-4. Click **RUN** in the bottom left-hand corner.
-5. Open up a terminal on the switch.
-6. Install wget module on the switch, using the following command: apt-get install wget
-7. Type **Y** and click Enter when the switch asks you for confirmation.
-8. Install the setup script using: wget <**LINK TO SETUP.SH SCRIPT FROM GITHUB**>, use Shift + Insert to paste in Linux.
-9. Once download is complete, run the setup script using: bash setup.sh
-10. Packet monitoring enviroment is now ready!
  
  [^1]: **Reference**: 1. [J. Lynch, “Inside the Pentagon’s Struggle to Build a Cyber Force,” Fifth Domain publication, October 29, 2018](https://tinyurl.com/yyelqomp)
