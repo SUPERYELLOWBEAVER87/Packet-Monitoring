@@ -5,12 +5,13 @@
 The Cyberinfrastructure Lab at the University of South Carolina is a virtual platform dedicated to cybertraining purposes.
 [P4](https://opennetworking.org/p4/) (Programming Protocol-independent Packet Processors) is a novel, open source programming language for network devices. It enables developers to specify how data plane devices, such as switches routers and filters, process packets.
 
-Due to the current shortage of cyber security professionals in the American military, as well as the state-of-the-ark nature of P4 and the virtual equipment and professional tools required to learn the language, UofSC has proposed to address these issues by allowing undergraduate students to conduct research in applied cybersecurity under the guidance of a faculty professor.
+Due to the current shortage of cyber security professionals in the American military[^1], as well as the state-of-the-ark nature of P4 and the virtual equipment and professional tools required to learn the language, UofSC has proposed to address these issues by allowing undergraduate students to conduct research in applied cybersecurity under the guidance of a faculty professor.
 
 ### My Research Topic: [Implementing a Monitoring Device using a P4 Programmable Switch](http://ce.sc.edu/cyberinfra/docs/onr_projects/spring2022/P4%20monitoring.pdf)
 Monitoring devices such as Netflow collect active IP network traffic as it flows in or out of an interface. While Netflow and other legacy protocols provide visibility and help identifying network problems, they are not granular (resolution is typically in the order of seconds) and are subject to proprietary implementations.
 
 ## Implementation
+The research will take over the course of eight weeks from February 1, 2022 - April 22, 2022.
 
 ### Workflow of a P4 Program
 After compiling a P4 program, two files are generated. A data plane configuration file that implements forwarding logic that includes instructions and resource mappings for the target. Then it generates runtime APIs that are used by the control plane to interact with the data plane. For example adding and removing entries from match-action tables or reading/writing the state of objects. This allows users to manipulate tables and objects.
@@ -57,3 +58,4 @@ Send **stream of packets** use: ping 10.0.0.2 on Host 1.
 Get the index from the registers: **register_read r_index <INDEX NUMBER>**
 Read the index in the switch by using: **bash read.sh**, then type in the index.
  
+ [^1]: **Reference**: 1. [J. Lynch, “Inside the Pentagon’s Struggle to Build a Cyber Force,” Fifth Domain publication, October 29, 2018](https://tinyurl.com/yyelqomp)
