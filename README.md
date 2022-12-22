@@ -5,7 +5,7 @@
 The Cyberinfrastructure Lab at the University of South Carolina is a virtual platform dedicated to cybertraining purposes.
 [P4](https://opennetworking.org/p4/) (Programming Protocol-independent Packet Processors) is a novel, open source programming language for network devices. It enables developers to specify how data plane devices, such as switches routers and filters, process packets.
 
-Due to the current shortage of cyber security professionals in the American military[^1], as well as the state-of-the-ark nature of P4 and the virtual equipment and professional tools required to learn the language, UofSC has proposed to address these issues by allowing undergraduate students to conduct research in applied cybersecurity under the guidance of a faculty professor.
+Due to the current shortage of cyber security professionals in the American military[^1], the state-of-the-ark nature of P4, and the virtual equipment and professional tools required to learn the language, UofSC has proposed to address these issues by allowing undergraduate students to conduct research in applied cybersecurity under the guidance of a faculty professor.
 
 ### My Research Topic: [Implementing a Monitoring Device using a P4 Programmable Switch](http://ce.sc.edu/cyberinfra/docs/onr_projects/spring2022/P4%20monitoring.pdf)
 Monitoring devices such as Netflow collect active IP network traffic as it flows in or out of an interface. While Netflow and other legacy protocols provide visibility and help identifying network problems, they are not granular (resolution is typically in the order of seconds) and are subject to proprietary implementations.
