@@ -56,6 +56,11 @@ After compiling a P4 program, two files are generated. A data plane configuratio
 
 ![image](https://user-images.githubusercontent.com/78384615/208184459-4b776b49-c33e-4daf-9e44-e89725d857b8.png)
 
+## Simulation Network Topology
+
+![image](https://user-images.githubusercontent.com/78384615/209104798-3f3b3e1b-25a3-41bb-9271-1f1c0e1061a2.png)
+
+
 ### Instructions to replicate
 
 1. Navigate to: github.com/superyellowbeaver87
