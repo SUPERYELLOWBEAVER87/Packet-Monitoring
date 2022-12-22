@@ -2,7 +2,7 @@
 ![image](https://user-images.githubusercontent.com/78384615/209087727-3a8e7614-b271-4159-907e-542c6defa200.png)
 
 ## Introduction :wave:
-The Cyberinfrastructure Lab at the University of South Carolina is a virtual platform dedicated to cybertraining purposes.
+The [Cyberinfrastructure Lab](http://ce.sc.edu/cyberinfra/cybertraining.html) at the University of South Carolina is a virtual platform dedicated to cybertraining purposes.
 [P4](https://opennetworking.org/p4/) (Programming Protocol-independent Packet Processors) is a novel, open source programming language for network devices. It enables developers to specify how data plane devices, such as switches routers and filters, process packets.
 
 Due to the current shortage of cyber security professionals in the American military[^1], the state-of-the-ark nature of P4, and the virtual equipment and professional tools required to learn the language, UofSC has proposed to address these issues by allowing undergraduate students to conduct research in applied cybersecurity under the guidance of a faculty professor.
