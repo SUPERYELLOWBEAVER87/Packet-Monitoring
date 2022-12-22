@@ -40,7 +40,7 @@ The V1Model is seperated into several different stages:
 
 ![image](https://user-images.githubusercontent.com/78384615/209098259-d8c992c5-2f32-456d-91f2-fff654d22a66.png)
 
-### Code Overview
+## Code Overview
 Ethernet, IPv4, and TCP classes along with metadata structures will be defined in `headers`.
 
 The `parser` block will be parse and ethernet, IPv4, and TCP headers.
@@ -51,15 +51,12 @@ In order to uniquely identify **flows**, or streams of data that contain the sam
 
 The function will specifically spit out a max value of `<65536>` or `2^16` due to the nature of the hashing algorithm in use. A standard forwarding table will be used, and applied in the `apply` block. Otherwise, the program will compute the hash of the packet entering the network device. If the unique hash value, the `flowID` has already been generated and already exists, then it will amend the start and end time of that flow, as well as the total amount of unidirectional traffic.. Source, destination IP Address and Port stays constant. Otherwise, we can assume that this is a brand new flow. Simply add the data in to the registers and indicate that the flow now exists.
 
-### Workflow of a P4 Program
+## Workflow of a P4 Program
 After compiling a P4 program, two files are generated. A data plane configuration file that implements forwarding logic that includes instructions and resource mappings for the target. Then it generates runtime APIs that are used by the control plane to interact with the data plane. For example adding and removing entries from match-action tables or reading/writing the state of objects. This allows users to manipulate tables and objects.
 
 ![image](https://user-images.githubusercontent.com/78384615/208184459-4b776b49-c33e-4daf-9e44-e89725d857b8.png)
- 
-PROJECT COMPLETE, STEPS TO REPLICATE PACKET MONITOR
 
-#### STEPS TO RECREATE PACKET MONITORING ENVIROMENT**
-Use Lab02 on Pod 5707
+### Instructions to replicate
 
 1. Navigate to: github.com/superyellowbeaver87
 2. Copy the **RAW LINK** of the setup.sh file.
@@ -71,12 +68,5 @@ Use Lab02 on Pod 5707
 8. Install the setup script using: wget <**LINK TO SETUP.SH SCRIPT FROM GITHUB**>, use Shift + Insert to paste in Linux.
 9. Once download is complete, run the setup script using: bash setup.sh
 10. Packet monitoring enviroment is now ready!
-
-## Testing commands:
-Send **single packet flows** use: ./send.py on Host 1 and ./recv.py on Host 2.
-Send **stream of packets** use: ping 10.0.0.2 on Host 1.
-
-Get the index from the registers: **register_read r_index <INDEX NUMBER>**
-Read the index in the switch by using: **bash read.sh**, then type in the index.
  
  [^1]: **Reference**: 1. [J. Lynch, “Inside the Pentagon’s Struggle to Build a Cyber Force,” Fifth Domain publication, October 29, 2018](https://tinyurl.com/yyelqomp)
