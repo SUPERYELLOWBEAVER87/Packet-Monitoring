@@ -1,8 +1,16 @@
-# P4-Packet-Monitoring
-Monitoring devices such as Netflow collect active IP network traffic as it flows in or out
-of an interface. While Netflow and other legacy protocols provide visibility and help
-identifying network problems, they are not granular (resolution is typically in the order of
-seconds) and are subject to proprietary implementations.
+![image](https://user-images.githubusercontent.com/78384615/209057211-685cb1eb-3a5e-4b2a-960e-f2e3bed54965.png)
+![image](https://user-images.githubusercontent.com/78384615/209087727-3a8e7614-b271-4159-907e-542c6defa200.png)
+
+## Introduction :wave:
+The Cyberinfrastructure Lab at the University of South Carolina is a virtual platform dedicated to cybertraining purposes.
+[P4](https://opennetworking.org/p4/) (Programming Protocol-independent Packet Processors) is a novel, open source programming language for network devices. It enables developers to specify how data plane devices, such as switches routers and filters, process packets.
+
+Due to the current shortage of cyber security professionals in the American military, as well as the state-of-the-ark nature of P4 and the virtual equipment and professional tools required to learn the language, UofSC has proposed to address these issues by allowing undergraduate students to conduct research in applied cybersecurity under the guidance of a faculty professor.
+
+### My Research Topic: [Implementing a Monitoring Device using a P4 Programmable Switch](http://ce.sc.edu/cyberinfra/docs/onr_projects/spring2022/P4%20monitoring.pdf)
+Monitoring devices such as Netflow collect active IP network traffic as it flows in or out of an interface. While Netflow and other legacy protocols provide visibility and help identifying network problems, they are not granular (resolution is typically in the order of seconds) and are subject to proprietary implementations.
+
+## Implementation
 
 ### Workflow of a P4 Program
 After compiling a P4 program, two files are generated. A data plane configuration file that implements forwarding logic that includes instructions and resource mappings for the target. Then it generates runtime APIs that are used by the control plane to interact with the data plane. For example adding and removing entries from match-action tables or reading/writing the state of objects. This allows users to manipulate tables and objects.
